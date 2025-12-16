@@ -15,16 +15,87 @@ static Window root;
 MACROS
 */
 
-#define POSX    500
-#define POSY    500
-#define WIDTH   500
-#define HEIGHT  500
-#define BORDER  15
+/*
+    @brief: Creates a window from the specified dimensions
 
-int main(int argc, char** argv) {
+    @details: The background is white, border is black. 
+    Event mask is buttonPress: program stops whenever a 
+    button is pressed.
 
-    Window window1;
+    It uses XCreateWindow instead of XCreateSimpleWindow.
+*/
+static Window createWindow(int posx, int posy, int width, int height, int border) {
+
+    // Specifications for the Window
+    XSetWindowAttributes xattr; 
+
+    xattr.background_pixel  = WhitePixel(dpy, screen_number);
+    xattr.border_pixel      = BlackPixel(dpy, screen_number);
+    xattr.event_mask        = ButtonPress;
+
+    // Creates a window as a subwindow of root.
+    /*
+    Syntax: XCreateWindow(display, root_window, x, y, w, h, b
+                depth, class (inputOutput/InputOnly), visual,
+                mask, xattribute)
+    */
+    Window win = XCreateWindow(dpy, root, posx, posy, width, height, border,
+                 DefaultDepth(dpy, screen_number), InputOutput,
+                 DefaultVisual(dpy, screen_number),
+                 CWBackPixel | CWBorderPixel | CWEventMask,
+                 &xattr
+                );
+    return win;
+}
+
+/*
+    @brief: Takes input of x,y,width,height, border, and 
+    uses them to create a window
+*/
+Window takeWindowInput() {
+    /*
+    Last two variables: Border and Background
+    */
+    printf("Enter the dimensions (x,y,width,height,border): ");
+    int x, y;
+    unsigned int width, height, border;
+    scanf("%d %d %u %u %u", &x, &y, &width, &height, &border);
+
+    Window win = createWindow(x, y, width, height, border);
+
+    printf("Created window.\n");
+    return win;
+}
+
+/*
+    @brief: Runs the window till the next event.
+*/
+static void run() {
     XEvent ev;
+
+    while(XNextEvent(dpy, &ev) == 0) {
+        switch(ev.type) {
+            case ButtonPress:
+                return;
+
+        }
+    }
+}
+
+/*
+    @brief: Frees the resources
+*/
+void freeWindows(Window* win) {
+    XUnmapWindow(dpy, *win);
+    XDestroyWindow(dpy, *win);
+
+    //Close connection with X11
+    XCloseDisplay(dpy);
+}
+
+
+int main(/* int argc, char** argv */) {
+    
 
     // Establish connection with X11
     dpy = XOpenDisplay(NULL);
@@ -38,31 +109,13 @@ int main(int argc, char** argv) {
     screen_number = DefaultScreen(dpy);
     root = RootWindow(dpy, screen_number); 
 
-    /*
-    Last two variables: Border and Background
-    */
-    window1 = XCreateSimpleWindow(dpy, root, POSX, POSY, 
-              WIDTH, HEIGHT, BORDER, 
-              BlackPixel(dpy, screen_number),
-              WhitePixel(dpy, screen_number)
-            );
-    
+    // Window input 
+    Window win = takeWindowInput();
+
     // Map our widow to display Server
-    XMapWindow(dpy, window1);
+    XMapWindow(dpy, win);
 
-    // XEventGroup, writes o XEvent as long as there are next event
-    while(XNextEvent(dpy, &ev) == 0) {
-         
-    }
-    /*
-    Free the resources
-    */
-    // Unmap widow
-    XUnmapWindow(dpy, window1);
+    run();
 
-    // Destroy Window 
-    XDestroyWindow(dpy, window1);
-
-    // XClose the connection with X11.
-    XCloseDisplay(dpy);
+    freeWindows(&win);
 }
