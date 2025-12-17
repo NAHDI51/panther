@@ -62,8 +62,6 @@ Window takeWindowInput() {
     scanf("%d %d %u %u %u", &x, &y, &width, &height, &border);
 
     Window win = createWindow(x, y, width, height, border);
-
-    printf("Created window.\n");
     return win;
 }
 
@@ -97,11 +95,10 @@ void freeWindows(Window* win) {
 int main(/* int argc, char** argv */) {
     
 
-    // Establish connection with X11
+    // Establish connection with X11, and check if 
+    // estabilshed properly.
     dpy = XOpenDisplay(NULL);
-
-    // Cherck if opened properly 
-    if(dpy == NULL) {
+    if((dpy = XOpenDisplay(NULL)) == NULL) {
         errx(1, "Can't open display.\n");
     }
 
