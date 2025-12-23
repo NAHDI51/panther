@@ -10,7 +10,7 @@
 #include <stdlib.h>
 #include <err.h>
 
-static void createColor(
+void createColor(
     XftColor* colorResource, 
     ColorCode colorCode
 ) {
@@ -31,7 +31,7 @@ static void createColor(
     return;
 }
 
-static void constructColorResources() {
+void constructColorResources() {
     for(int i = 0; i < COLOR_COUNT; i++) {
         // They will be freed from the main header file upon termination.
         colorResources[i] = (XftColor*) malloc(sizeof(XftColor));
@@ -39,7 +39,7 @@ static void constructColorResources() {
     }
 }
 
-static void destroyColorResources() {
+void destroyColorResources() {
     for(int i = 0; i < COLOR_COUNT; i++) {
         XftColorFree(
             disp,

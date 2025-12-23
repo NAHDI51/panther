@@ -11,7 +11,7 @@
 #include "window.h"
 #include "color.h"
 
-static GC createGraphicContent(
+GC createGraphicContent(
     unsigned int lineWidth, 
     Window win,
     unsigned long fgColor, 
@@ -22,7 +22,7 @@ static GC createGraphicContent(
 
         // Drawing attributes
         .line_style = LINE_STYLE,
-        .line_width = LINE_WIDTH,
+        .line_width = lineWidth,
         .cap_style  = CAP_STYLE,
         .join_style = JOIN_STYLE,
         .fill_style = FILL_STYLE,
@@ -39,7 +39,7 @@ static GC createGraphicContent(
                 GCLineWidth  | 
                 GCCapStyle   | 
                 GCJoinStyle;
-                
+
     GC graphicContent = XCreateGC(disp, win, valueMask, &xgcValues);
     return graphicContent;
 }

@@ -23,7 +23,7 @@ typedef enum {
     BORDER = 10,
 } DefaultWindowProperties;
 
-static Window createWindow(
+Window createWindow(
     int x, // posX
     int y, // posY
     int w, // width
@@ -64,7 +64,7 @@ Window openDefaultWindow();
         then the window will not be resizable.
 */
 
-static void setWindowSizeHints(
+void setWindowSizeHints(
     Window win, 
     int minWidth, int minHeight,
     int maxWidth, int maxHeight
@@ -73,7 +73,7 @@ static void setWindowSizeHints(
 /*
     @brief: Sets a fixed size for the window
 */
-static void setFixedWindowSize(
+void setFixedWindowSize(
     Window win, 
     int width, 
     int height

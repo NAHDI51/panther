@@ -7,7 +7,7 @@
 #include "color.h"
 #include "window.h"
 
-static Window createWindow(
+Window createWindow(
     int x, // posX
     int y, // posY
     int w, // width
@@ -52,7 +52,7 @@ static Window createWindow(
     return win;
 }
 
-static void setWindowSizeHints(
+void setWindowSizeHints(
     Window win, 
     int minWidth, 
     int minHeight,
@@ -72,7 +72,7 @@ static void setWindowSizeHints(
 /*
     @brief: Sets a fixed size for the window
 */
-static void setFixedWindowSize(Window win, int width, int height) {
+void setFixedWindowSize(Window win, int width, int height) {
     setWindowSizeHints(win, width, height, width, height);
 }
 

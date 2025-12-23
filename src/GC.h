@@ -19,7 +19,7 @@ typedef enum {
     FILL_STYLE = FillSolid,
 } defaultGCProperties;
 
-static GC createGraphicContent(
+GC createGraphicContent(
     unsigned int lineWidth, 
     Window win,
     unsigned long fgColor, 

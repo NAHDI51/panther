@@ -97,6 +97,7 @@ int main(/* int argc, char** argv */) {
 
     // Establish connection with X11, and check if 
     // estabilshed properly.
+    
     dpy = XOpenDisplay(NULL);
     if((dpy = XOpenDisplay(NULL)) == NULL) {
         errx(1, "Can't open display.\n");

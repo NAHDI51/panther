@@ -1,5 +1,5 @@
-#ifndef _MAIN_H
-#define _MAIN_H 1
+#ifndef _DEF_H
+#define _DEF_H 1
 
 /*
     Inclusions
@@ -16,10 +16,10 @@
     Global display attributes
 */
 
-static Display* disp;
-static int screenNum;
-static Window rootWindow;
-static Visual* mainVisual;
+Display* disp;
+int screenNum;
+Window rootWindow;
+Visual* mainVisual;
 
 // Construction of necessary resources
 void constructDisplay();
@@ -33,4 +33,4 @@ void destroyDisplay(
     // Visual* vis
 );
 
-#endif // End of _MAIN_H guard
+#endif // End of __DEF_H guard
