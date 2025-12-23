@@ -16,10 +16,10 @@
     Global display attributes
 */
 
-Display* disp;
-int screenNum;
-Window rootWindow;
-Visual* mainVisual;
+extern Display* disp;
+extern int screenNum;
+extern Window rootWindow;
+extern Visual* mainVisual;
 
 // Construction of necessary resources
 void constructDisplay();

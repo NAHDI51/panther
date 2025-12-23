@@ -11,6 +11,12 @@
 #include "window.h"
 #include "GC.h"
 
+// Global extern variable defintions
+Display* disp;
+int screenNum;
+Window rootWindow;
+Visual* mainVisual;
+
 /*
     @brief Sets the necessary globat attributes with
     proper value.

@@ -10,6 +10,20 @@
 #include <stdlib.h>
 #include <err.h>
 
+//Extern variable definitions
+XftColor* colorResources[COLOR_COUNT];
+const char *colorCodes[COLOR_COUNT] = {
+    [COLOR_BLACK]   = "#000000",
+    [COLOR_WHITE]   = "#FFFFFF",
+    [COLOR_BLUE]    = "#0000FF",
+    [COLOR_GREEN]   = "#00FF00",
+    [COLOR_RED]     = "#FF0000",
+    [COLOR_YELLOW]  = "#FFFF00",
+    [COLOR_CYAN]    = "#00FFFF",
+    [COLOR_MAGENTA] = "#FF00FF"
+};
+
+
 void createColor(
     XftColor* colorResource, 
     ColorCode colorCode

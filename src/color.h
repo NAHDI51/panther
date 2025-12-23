@@ -48,19 +48,9 @@ typedef enum {
     COLOR_COUNT
 } ColorIndex;
 
-const char *colorCodes[COLOR_COUNT] = {
-    [COLOR_BLACK]   = "#000000",
-    [COLOR_WHITE]   = "#FFFFFF",
-    [COLOR_BLUE]    = "#0000FF",
-    [COLOR_GREEN]   = "#00FF00",
-    [COLOR_RED]     = "#FF0000",
-    [COLOR_YELLOW]  = "#FFFF00",
-    [COLOR_CYAN]    = "#00FFFF",
-    [COLOR_MAGENTA] = "#FF00FF"
-};
-
+extern const char *colorCodes[COLOR_COUNT];
 // They need to be initialized by createColor function before use
-XftColor* colorResources[COLOR_COUNT];
+extern XftColor* colorResources[COLOR_COUNT];
 
 /*
     @brief: Creates color based on the hex provided.
