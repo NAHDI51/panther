@@ -1,16 +1,21 @@
 # Main program
 PROG := main
 
-# Source code
-SRC := ${wildcard src/*.c}
+# Files to exclude
+EXCLUDE := main.c 
+
+# Source code: all .c files in src except excluded ones
+# SRC := ${wildcard src/*.c}  # old method
+SRC := $(filter-out $(addprefix src/, $(EXCLUDE)), $(wildcard src/*.c))
 
 # Object code 
 OBJ := ${SRC:.c=.o}
 
 # flags of each type
 CC = gcc 
-INCLUDES = -I/usr/include/X11
-LIBRARIES = -lX11
+# The last two: ❯ pkg-config --cflags xft
+INCLUDES = -I/usr/include/X11 -I/usr/include/freetype2 -I/usr/include/libpng16
+LIBRARIES = -lX11 -lXft -lXinerama
 
 # Linker Flags (From object to program)
 LDFLAGS := ${LIBRARIES}
