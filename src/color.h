@@ -11,7 +11,6 @@
 
 #ifndef __COLOR_H
 #define __COLOR_H 1
-#endif
 
 /*
     inclusions
@@ -21,7 +20,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
 #include <X11/X.h>
-#include "main.h"
+#include "def.h"
 
 /*
     Visual colors
@@ -31,29 +30,37 @@
 
 typedef char* ColorCode;
 
-// Indexed from 0 to 7
-#define BLACKCOLOR   (ColorCode*) "#000000"
-#define WHITECOLOR   (ColorCode*) "#FFFFFF"
-#define BLUECOLOR    (ColorCode*) "#0000FF"
-#define GREENCOLOR   (ColorCode*) "#00FF00"
-#define REDCOLOR     (ColorCode*) "#FF0000"
-#define YELLOWCOLOR  (ColorCode*) "#FFFF00"
-#define CYANCOLOR    (ColorCode*) "#00FFFF"
-#define MAGENTACOLOR (ColorCode*) "#FF00FF"
+/*
+    The program will not yet support adding custom colors. 
+    The 8 default colors will make up everything for the time
+    being. However, I may need some other colors in the future for
+    inner functionality, for which reserve colors will be used.
+*/
+typedef enum {
+    COLOR_BLACK = 0,
+    COLOR_WHITE,
+    COLOR_BLUE,
+    COLOR_GREEN,
+    COLOR_RED,
+    COLOR_YELLOW,
+    COLOR_CYAN,
+    COLOR_MAGENTA,
+    COLOR_COUNT
+} ColorIndex;
 
-ColorCode* colorCodes[] = {
-    BLACKCOLOR,
-    WHITECOLOR,
-    BLUECOLOR,
-    GREENCOLOR,
-    REDCOLOR,
-    YELLOWCOLOR,
-    CYANCOLOR,
-    MAGENTACOLOR
+static const char *colorCodes[COLOR_COUNT] = {
+    [COLOR_BLACK]   = "#000000",
+    [COLOR_WHITE]   = "#FFFFFF",
+    [COLOR_BLUE]    = "#0000FF",
+    [COLOR_GREEN]   = "#00FF00",
+    [COLOR_RED]     = "#FF0000",
+    [COLOR_YELLOW]  = "#FFFF00",
+    [COLOR_CYAN]    = "#00FFFF",
+    [COLOR_MAGENTA] = "#FF00FF"
 };
 
 // They need to be initialized by createColor function before use
-XftColor* colorResources[8];
+XftColor* colorResources[COLOR_COUNT];
 
 /*
     @brief: Creates color based on the hex provided.
@@ -62,5 +69,8 @@ static void createColor(
     XftColor* colorResource, 
     ColorCode colorCode
 );
+// @brief: Initializes and destroys all the color resources
 static void initializeColorResources();
+static void destroyColorResources();
 
+#endif // __COLOR_H
