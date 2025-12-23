@@ -1,14 +1,24 @@
+#ifndef _MAIN_H
+#define _MAIN_H 1
+
 /*
-    * def.h
-    *
-    * Created on: 2011-5-19
-    * 
-    * def.h contains the essential definitions and macros needed 
-    * across the files of the project, bundled together. It contains
-    * color definitions, window creation functions, and necessary structures
-    * for the paint application.
+    Inclusions
 */
 
-#ifndef __DEF_H
-#define __DEF_H
-#endif
+#include <X11/X.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/XKBlib.h>
+#include <X11/Xatom.h>
+#include <X11/Xft/Xft.h>
+
+/*
+    Global display attributes
+*/
+
+static Display* disp;
+static int screenNum;
+static Window rootWindow;
+static Visual* mainVisual;
+
+#endif // End of _MAIN_H guard
