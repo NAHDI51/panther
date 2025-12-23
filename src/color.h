@@ -70,7 +70,7 @@ static void createColor(
     ColorCode colorCode
 );
 // @brief: Initializes and destroys all the color resources
-static void initializeColorResources();
+static void constructColorResources();
 static void destroyColorResources();
 
 #endif // __COLOR_H

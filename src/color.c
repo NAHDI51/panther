@@ -31,7 +31,7 @@ static void createColor(
     return;
 }
 
-static void initializeColorResources() {
+static void constructColorResources() {
     for(int i = 0; i < COLOR_COUNT; i++) {
         // They will be freed from the main header file upon termination.
         colorResources[i] = (XftColor*) malloc(sizeof(XftColor));
