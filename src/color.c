@@ -114,6 +114,10 @@ Toolbar createColorboxToolbar(Window win) {
     Toolbar bar = (Toolbar) {
         .width  = toolbarWidth,
         .height = toolbarHeight,
+
+        .offsetX = COLORBOX_X_OFFSET,
+        .offsetY = COLORBOX_Y_OFFSET,
+
         .pixmap = XCreatePixmap (
             disp,
             win,
@@ -189,9 +193,57 @@ void drawColorboxToolbar(Toolbar toolbar, GC graphicContent, Window win) {
         toolbar.width, toolbar.height,
         // This places the toolbar on the bottom-left corner.
         // 2 so that the placement is slightly above the bottom edge.
-        COLORBOX_X_OFFSET, COLORBOX_Y_OFFSET
+        // COLORBOX_X_OFFSET, COLORBOX_Y_OFFSET
+
+        // Much convenient
+        toolbar.offsetX, toolbar.offsetY
     );
     printf("Made drawcolorboxtoolbar.\n");
+}
+
+int clickedColorButton(
+    int mouseX,
+    int mouseY,
+    Toolbar colorbox
+) {
+    // CASE 1: -2 -> if outside colorbox.
+    int startX = (WIDTH - colorbox.width) / 2;
+    int endX   = startX + colorbox.width;
+    int endY   = colorbox.offsetY + colorbox.height;
+
+    if(mouseX < startX ||
+       mouseX > endX   ||
+       mouseY < colorbox.offsetY ||
+       mouseY > endY) {
+        return -2;  
+    }
+
+    // Translated Coordinates of the colorbox toolbar.
+    int localX = mouseX - colorbox.offsetX;
+    int localY = mouseY - colorbox.offsetY;
+
+    // CASE 2: index if inside a color box.
+    for(int i = 0; i < COLOR_COUNT; i++) {
+
+        // Centers of the color Boxes.
+        int cx = colorButtons[i].posx + colorButtons[i].width / 2;
+        int cy = colorButtons[i].posy + colorButtons[i].height / 2;
+
+        // Radius
+        int r = colorButtons[i].width / 2;
+
+        // Mouse position relative to the circle.
+        int dx = localX - cx;
+        int dy = localY - cy;
+
+        // Within radius equation
+        if(dx*dx + dy*dy - r*r <= 0) {
+            return i;
+        }
+    }
+
+    // CASE 3: -1 -> if inside colorbox but not on any button.
+    return -1;
 }
 
 void destroyColorResources() {
