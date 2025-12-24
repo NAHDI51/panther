@@ -16,10 +16,10 @@
 */
 
 typedef enum {
-    POSX = 500,
-    POSY = 500,
-    WIDTH = 500,
-    HEIGHT = 500,
+    POSX = 800,
+    POSY = 800,
+    WIDTH = 800,
+    HEIGHT = 800,
     BORDER = 10,
 } DefaultWindowProperties;
 
@@ -78,6 +78,14 @@ void setFixedWindowSize(
     int width, 
     int height
 );
+
+/*
+    Toolbars: represented as pixmaps
+*/
+typedef struct {
+    int width, height;
+    Pixmap pixmap;
+} Toolbar;
 
 
 

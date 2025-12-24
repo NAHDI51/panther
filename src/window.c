@@ -25,6 +25,7 @@ Window createWindow(
                 ButtonReleaseMask | 
                 Button1Mask       | 
                 Button3Mask       | 
+                ExposureMask      |
                 KeyPressMask;
 
 
@@ -117,8 +118,9 @@ Window openDefaultWindow() {
                                      colorResources[COLOR_WHITE]->pixel,
                                      colorResources[COLOR_RED]->pixel      
     );
-    XStoreName(disp, mainWindow, "Default Paint Window");
+    XStoreName(disp, mainWindow, "Panther");
     XMapWindow(disp, mainWindow);
+    XFlush(disp);
 
     // For the time being, setting fixed window size.
     setFixedWindowSize(mainWindow, WIDTH, HEIGHT);
