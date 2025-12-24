@@ -13,11 +13,22 @@
 #include "GC.h"
 #include "window.h"
 #include "color.h"
+#include "colorbox.h"
 
 void run(Window mainWindow, GC graphicContent, Toolbar colorbox) {
     XEvent event;
     int prevX = 0, prevY = 0;
     bool pointInit = false;
+    bool clickedOnCanvas = false;
+
+    /*
+        Primary and secondary colors
+        DEFAULT: BLACK and BLUE
+    */
+    unsigned long primaryColor   = colorResources[COLOR_BLACK]->pixel;
+    unsigned long secondaryColor = colorResources[COLOR_BLUE]->pixel;
+
+    drawColorboxToolbar(colorbox, graphicContent, mainWindow, primaryColor, secondaryColor);
 
     // printf("reached runGraphicContent\n");
 
@@ -28,21 +39,56 @@ void run(Window mainWindow, GC graphicContent, Toolbar colorbox) {
             case ButtonPress:
                 // printf("Reached button press\n");
 
+                // If clicked on colorbox, change color, else do nothing.
+                int clickedIndex = clickedColorButton(
+                    event.xbutton.x,
+                    event.xbutton.y,
+                    colorbox
+                );
 
-                // Color red
-                if(event.xbutton.button == Button1) {
-                    // printf("reached button 1\n"); 
-                    XSetForeground(disp, graphicContent, colorResources[COLOR_RED]->pixel);
+                // Outside border implementation: draw
+
+                int clickedButton = event.xbutton.button;
+
+                if(clickedIndex == -2) {
+                    /*
+                        Only this case turns clickedOnCanvus to true.
+                        All other options turn it to false.
+                    */
+                    clickedOnCanvas = true;
+
+                    if(clickedButton == Button1) 
+                        XSetForeground(disp, graphicContent, primaryColor);
+            
+                    else if(clickedButton == Button3) 
+                        XSetForeground(disp, graphicContent, secondaryColor);
+    
                     XDrawPoint(disp, event.xbutton.window, graphicContent,
-                               event.xbutton.x, event.xbutton.y
+                                event.xbutton.x, event.xbutton.y
                     );
+
                 } 
-                // Color blue
-                else if(event.xbutton.button == Button3) {
-                    XSetForeground(disp, graphicContent, colorResources[COLOR_BLUE]->pixel);
-                    XDrawPoint(disp, event.xbutton.window, graphicContent,
-                               event.xbutton.x, event.xbutton.y
+                // Change color.
+                // If -1 happens, don't do anything.
+                else if(clickedIndex != -1) {
+
+                    clickedOnCanvas = false;
+
+                    // Change the color hexcode based on click.
+                    if(clickedButton == Button1) 
+                        primaryColor = colorButtons[clickedIndex].code;
+                    
+                    else if(clickedButton == Button3)
+                        secondaryColor = colorButtons[clickedIndex].code;
+                    
+                    drawColorboxToolbar(
+                        colorbox, graphicContent, mainWindow,
+                        primaryColor, secondaryColor
                     );
+
+                } else {
+                    // -1
+                    clickedOnCanvas = false;
                 }
 
                 break;
@@ -51,20 +97,24 @@ void run(Window mainWindow, GC graphicContent, Toolbar colorbox) {
             case MotionNotify:
                 // printf("Reached motion notify\n");
 
-                if(pointInit) {
-                    XDrawLine(disp, event.xbutton.window, graphicContent,
-                              prevX          , prevY,           /* From */
-                              event.xbutton.x, event.xbutton.y  /* To */
-                    );
-                } else {
-                    XDrawPoint(disp, event.xbutton.window, graphicContent,
-                               event.xbutton.x, event.xbutton.y
-                    );
-                    pointInit = true;
-                } 
+                // Do something only upon clickedOnCanvas, otherwise no need
 
-                prevX = event.xbutton.x;
-                prevY = event.xbutton.y;
+                if(clickedOnCanvas) {
+                    if(pointInit) {
+                        XDrawLine(disp, event.xbutton.window, graphicContent,
+                                prevX          , prevY,           /* From */
+                                event.xbutton.x, event.xbutton.y  /* To */
+                        );
+                    } else {
+                        XDrawPoint(disp, event.xbutton.window, graphicContent,
+                                event.xbutton.x, event.xbutton.y
+                        );
+                        pointInit = true;
+                    } 
+
+                    prevX = event.xbutton.x;
+                    prevY = event.xbutton.y;
+                }
 
                 break;
             
@@ -74,9 +124,11 @@ void run(Window mainWindow, GC graphicContent, Toolbar colorbox) {
                 break;
             
             case Expose:
-                printf("Exposed\n");
                 // Redraw 
-                drawColorboxToolbar(colorbox, graphicContent, mainWindow);
+                drawColorboxToolbar(
+                    colorbox, graphicContent, mainWindow,
+                    primaryColor, secondaryColor
+                );
                 break;
             
             case KeyPress:
@@ -100,7 +152,6 @@ int main() {
     // GC graphicContent = takeGraphicContentInput(mainWindow);
     GC graphicContent = openDefaultGraphicContent(mainWindow);
     Toolbar colorbox = createColorboxToolbar(mainWindow);
-    drawColorboxToolbar(colorbox, graphicContent, mainWindow);
 
     // Colorbox is usable for now.
     run(mainWindow, graphicContent, colorbox);

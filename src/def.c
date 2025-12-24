@@ -10,6 +10,7 @@
 #include "color.h"
 #include "window.h"
 #include "GC.h"
+#include "colorbox.h"
 
 // Global extern variable defintions
 Display* disp;
