@@ -8,6 +8,10 @@
 #include "window.h"
 #include "color.h"
 #include "colorbox.h"
+#include "GC.h"
+#include "GC_snapshot.h"
+
+#include "shapes/shapes.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
@@ -45,10 +49,14 @@ void constructColorButtons() {
             posx: overall how many buttons covered + how many buttons padded
         */
         colorButtons[i] = (ColorButton) {
-            .posx   = startX + (COLORBOX_PAD * (i+1)) + (COLORBOX_SIZE * (i)),
-            .posy   = (COLORBOX_PAD),
-            .width  = COLORBOX_SIZE,
-            .height = COLORBOX_SIZE,
+            .button = createCircle(
+                        createPoint(
+                            startX + ((COLORBOX_PAD) * (i+1)) + (COLORBOX_SIZE * i), 
+                            COLORBOX_PAD
+                        ),
+                        COLORBOX_SIZE, COLORBOX_SIZE,
+                        COLORBOX_BORDER
+                    ),
             .code   = colorResources[i]->pixel    // Red, green, blue etc
         }; 
     }
@@ -74,8 +82,11 @@ Toolbar createColorboxToolbar(Window win) {
     int toolbarHeight = COLORBOX_SIZE + (2*COLORBOX_PAD);
 
     Toolbar bar = (Toolbar) {
-        .width  = toolbarWidth,
-        .height = toolbarHeight,
+        .bar = createRectangle(
+                   createPoint(0, 0),
+                   toolbarWidth, toolbarHeight,
+                   COLORBOX_BORDER
+                ),
 
         .offsetX = COLORBOX_X_OFFSET,
         .offsetY = COLORBOX_Y_OFFSET,
@@ -92,7 +103,6 @@ Toolbar createColorboxToolbar(Window win) {
     return bar;
 }
 
-// Needs to be updated for the readability
 void drawColorboxToolbar(
     Toolbar toolbar, 
     GC graphicContent, 
@@ -101,19 +111,9 @@ void drawColorboxToolbar(
     unsigned long secondaryColor 
 ) {
 
-    // Fill toolbar pixmap with background (white)
-    XSetForeground(
-        disp, 
-        graphicContent, 
-        COLOR_SEMIBLACK
-    );
-
-    XFillRectangle(
-        disp, 
-        toolbar.pixmap, 
-        graphicContent, 
-        0, 0, 
-        toolbar.width, toolbar.height);
+    GCSnapshot toolbarColorSnap = gcSetForeground(graphicContent, COLOR_SEMIBLACK);
+    drawRectangle(toolbar.pixmap, graphicContent, toolbar.bar, false);
+    gcRestore(graphicContent, toolbarColorSnap);
 
     for(int i = 0; i < COLOR_COUNT; i++) {
         unsigned long curColor = colorButtons[i].code;
@@ -122,73 +122,32 @@ void drawColorboxToolbar(
             Check for primary and secondary colors.
         */
         bool primaryOrSecondary = false;
+        GCSnapshot overlayColorSnap;
 
         if(curColor == primaryColor) {
-            XSetForeground(
-                disp,
-                graphicContent,
-                COLOR_PRIMARY_OVERLAY
-            );
+            overlayColorSnap = gcSetForeground(graphicContent, COLOR_PRIMARY_OVERLAY);
             primaryOrSecondary |= true;
+
         }
-        if(curColor == secondaryColor) {
-            XSetForeground(
-                disp,
-                graphicContent,
-                COLOR_SECONDARY_OVERLAY
-            );
+        else if(curColor == secondaryColor) {
+            overlayColorSnap = gcSetForeground(graphicContent, COLOR_SECONDARY_OVERLAY);
             primaryOrSecondary |= true;
         }
         if(primaryOrSecondary) {
-            XDrawArc(
-                disp,
-                toolbar.pixmap,
-                graphicContent,
-                colorButtons[i].posx - COLORBOX_BORDER/2,
-                colorButtons[i].posy - COLORBOX_BORDER/2,
-                colorButtons[i].width + COLORBOX_BORDER,
-                colorButtons[i].height + COLORBOX_BORDER,
-                0,
-                360*64
+            drawCircle(
+                toolbar.pixmap, graphicContent, 
+                colorButtons[i].button, true
             );
+            gcRestore(graphicContent, overlayColorSnap);
         }
 
         // Finally, fill normal colors.
-
-        XSetForeground(
-            disp, 
-            graphicContent, 
-            curColor
+        GCSnapshot buttonColorSnap = gcSetForeground(graphicContent, curColor);
+        drawCircle(
+            toolbar.pixmap, graphicContent, 
+            colorButtons[i].button, false
         );
-
-        // This creates circular buttons
-        XFillArc(
-            disp, 
-            toolbar.pixmap,
-            graphicContent,
-            colorButtons[i].posx,
-            colorButtons[i].posy,
-            colorButtons[i].width,
-            colorButtons[i].height,
-            0, 
-            360 * 64
-        );
-
-        // This is for square buttons
-        /*
-        XFillRectangle(
-            disp, 
-            toolbar.pixmap,
-            graphicContent,
-            colorButtons[i].posx,
-            colorButtons[i].posy,
-            colorButtons[i].width,
-            colorButtons[i].height
-        );
-        */
-        // printf("Drawn color button %d at pos (%d, %d)\n", 
-        //        i, colorButtons[i].posx, colorButtons[i].posy
-        // );
+        gcRestore(graphicContent, buttonColorSnap);
     }
 
     // Finally, copy from pixmap to win
@@ -197,8 +156,8 @@ void drawColorboxToolbar(
         toolbar.pixmap,
         win,
         graphicContent,
-        0, 0,
-        toolbar.width, toolbar.height,
+        toolbar.bar.p.posX, toolbar.bar.p.posY,
+        toolbar.bar.width, toolbar.bar.height,
         // This places the toolbar on the bottom-left corner.
         // 2 so that the placement is slightly above the bottom edge.
         // COLORBOX_X_OFFSET, COLORBOX_Y_OFFSET
@@ -210,44 +169,22 @@ void drawColorboxToolbar(
 }
 
 int clickedColorButton(
-    int mouseX,
-    int mouseY,
+    Point mouseP,
     Toolbar colorbox
 ) {
-    // CASE 1: -2 -> if outside colorbox.
-    int startX = (WIDTH - colorbox.width) / 2;
-    int endX   = startX + colorbox.width;
-    int endY   = colorbox.offsetY + colorbox.height;
-
-    if(mouseX < startX ||
-       mouseX > endX   ||
-       mouseY < colorbox.offsetY ||
-       mouseY > endY) {
-        return -2;  
-    }
 
     // Translated Coordinates of the colorbox toolbar.
-    int localX = mouseX - colorbox.offsetX;
-    int localY = mouseY - colorbox.offsetY;
-
+    Point localP = createPoint(
+        mouseP.posX - colorbox.offsetX,
+        mouseP.posY - colorbox.offsetY
+    );
+    // CASE 1: -2 -> if outside colorbox.
+    if(!pointInsideRectangle(localP, colorbox.bar))
+        return -2;
     // CASE 2: index if inside a color box.
     for(int i = 0; i < COLOR_COUNT; i++) {
-
-        // Centers of the color Boxes.
-        int cx = colorButtons[i].posx + colorButtons[i].width / 2;
-        int cy = colorButtons[i].posy + colorButtons[i].height / 2;
-
-        // Radius
-        int r = colorButtons[i].width / 2;
-
-        // Mouse position relative to the circle.
-        int dx = localX - cx;
-        int dy = localY - cy;
-
-        // Within radius equation
-        if(dx*dx + dy*dy - r*r <= 0) {
+        if(pointInsideCircle(localP, colorButtons[i].button))
             return i;
-        }
     }
 
     // CASE 3: -1 -> if inside colorbox but not on any button.

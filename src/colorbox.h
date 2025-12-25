@@ -13,6 +13,7 @@
 #include "window.h"
 
 #include "color.h"
+#include "shapes/circle.h"
 
 /*
     Some additional color to handle other things.
@@ -55,8 +56,7 @@ typedef enum {
     @brief: For the menubar color option buttons.
 */
 typedef struct {
-    int posx, posy;
-    int width, height;
+    Circle button;
     unsigned long code;
 } ColorButton;
 
@@ -78,8 +78,7 @@ void destroyColorButtons();
 
 */
 int clickedColorButton(
-    int mouseX,
-    int mouseY,
+    Point mouseP,
     Toolbar colorbox
 );
 
