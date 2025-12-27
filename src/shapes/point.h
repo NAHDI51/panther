@@ -14,6 +14,9 @@ Point createPoint(int x, int y);
 Point pointAdd(Point a, Point b);
 Point pointSubtract(Point a, Point b);
 
+int dotProduct(Point a, Point b);
+
+
 // Note: it returns un-square-rooted distance
 int pointDistSq(Point a, Point b);
 

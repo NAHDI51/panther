@@ -18,6 +18,11 @@ Point pointSubtract(Point a, Point b) {
     };
 }
 
+int dotProduct(Point a, Point b) {
+    return a.posX * b.posX + 
+           a.posY * b.posY;
+}
+
 int pointDistSq(Point a, Point b) {
     Point dPoint = pointSubtract(a, b);
 

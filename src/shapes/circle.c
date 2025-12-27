@@ -4,8 +4,8 @@
 
 #include "../def.h"
 #include "../window.h"
-#include "../GC.h"
-#include "../GC_snapshot.h"
+#include "../GC/GC.h"
+#include "../GC/GC_snapshot.h"
 
 #include "point.h"
 #include "rectangle.h"

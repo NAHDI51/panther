@@ -10,10 +10,11 @@
 #include <stdbool.h>
 
 #include "def.h"
-#include "GC.h"
+#include "GC/GC.h"
 #include "window.h"
 #include "color.h"
-#include "colorbox.h"
+
+#include "ui/colorbox.h"
 #include "shapes/shapes.h"
 
 void run(Window mainWindow, GC graphicContent, Toolbar colorbox) {
@@ -48,7 +49,6 @@ void run(Window mainWindow, GC graphicContent, Toolbar colorbox) {
                     ),
                     colorbox
                 );
-                printf("Clicked and received: %d\n", clickedIndex);
 
                 // Outside border implementation: draw
 
