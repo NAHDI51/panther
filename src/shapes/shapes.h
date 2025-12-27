@@ -11,6 +11,7 @@
 #include "point.h"
 #include "rectangle.h"
 #include "circle.h"
+#include "line.h"
 
 /*
     Adds a generic wrapper around the common properties of geometry
@@ -18,8 +19,9 @@
 
 typedef enum {
     SHAPE_RECTANGLE,
-    SHAPE_CIRCLE
+    SHAPE_CIRCLE,
     /* More for later */
+    SHAPE_LINE
 } ShapeType;
 
 typedef struct {
@@ -28,6 +30,7 @@ typedef struct {
     union  {
         Rectangle rect; 
         Circle circ;
+        Line line;
 
     };
 } Shape;

@@ -10,7 +10,9 @@ bool pointInsideShape(Point p, Shape s) {
 
         case SHAPE_CIRCLE:
             return pointInsideCircle(p, s.circ);
-
+        
+        case SHAPE_LINE:
+            return pointNearLine(p, s.line, 3);
     }
     return false;
 }
