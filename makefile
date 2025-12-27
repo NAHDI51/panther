@@ -2,11 +2,11 @@
 PROG := main
 
 # Files to exclude
-EXCLUDE := main.c 
+EXCLUDE := main.c pixmap.c
 
 # Source code: all .c files in src except excluded ones
 # SRC := ${wildcard src/*.c}  # old method
-SRC := $(filter-out $(addprefix src/, $(EXCLUDE)), $(wildcard src/*.c))
+SRC := $(filter-out $(addprefix src/, $(EXCLUDE)), $(wildcard src/*.c src/*/*.c))
 
 # Object code 
 OBJ := ${SRC:.c=.o}
