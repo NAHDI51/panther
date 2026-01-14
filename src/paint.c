@@ -105,10 +105,20 @@ void run(Window mainWindow, GC graphicContent, Toolbar colorbox) {
 
                 if(clickedOnCanvas) {
                     if(pointInit) {
-                        XDrawLine(disp, event.xbutton.window, graphicContent,
+                        int clickedIndex = clickedColorButton(
+                            createPoint(
+                                event.xbutton.x,
+                                event.xbutton.y
+                            ),
+                            colorbox
+                        );
+
+                        if(clickedIndex == -2) {
+                            XDrawLine(disp, event.xbutton.window, graphicContent,
                                 prevX          , prevY,           /* From */
                                 event.xbutton.x, event.xbutton.y  /* To */
-                        );
+                            );
+                        }
                     } else {
                         XDrawPoint(disp, event.xbutton.window, graphicContent,
                                 event.xbutton.x, event.xbutton.y
